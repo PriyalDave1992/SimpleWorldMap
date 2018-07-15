@@ -1,16 +1,24 @@
 package com.jibestreamtest.simpleworldmap;
 
+import android.app.ActionBar;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
-import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -20,13 +28,15 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 import java.util.Random;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
-        GoogleMap.OnMarkerClickListener, GoogleMap.OnMarkerDragListener, PlaceSelectionListener {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
+        GoogleMap.OnMarkerClickListener, GoogleMap.OnMarkerDragListener, View.OnClickListener {
 
     private GoogleMap mMap;
     private Marker mMarker;
+    private EditText mEditText;
     /** Default marker position when the activity is first created. */
     private static final LatLng DEFAULT_MARKER_POSITION = new LatLng(48.858179, 2.294576);
     /** List of hues to use for the marker */
@@ -57,8 +67,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private boolean mMoveCameraToMarker;
 
+    private static int EDIT_TEXT_CODE = 1;
+
     private static String TAG = MapsActivity.class.getSimpleName();
 
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+         if(resultCode == -1 && requestCode == 1)
+        {
+            Bundle bundle = data.getExtras();
+            if(bundle!=null) {
+                String place = bundle.getString("placename");
+                Double lat = Double.parseDouble(bundle.getString("lat"));
+                Double lng = Double.parseDouble(bundle.getString("lng"));
+                mMarkerPosition = new LatLng(lat,lng);
+                setSelectedPlace(place,mMarkerPosition);
+            }
+        }
+    }
     /**
      * Extra info about a marker.
      */
@@ -102,7 +130,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
+        formatToolBar();
         if (savedInstanceState == null) {
             // Activity created for the first time.
             mMarkerPosition = DEFAULT_MARKER_POSITION;
@@ -128,10 +156,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+      /* PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
-        autocompleteFragment.setOnPlaceSelectedListener(this);
+        autocompleteFragment.setOnPlaceSelectedListener(this);*/
+
+      mEditText = findViewById(R.id.edt_search_query);
+      mEditText.setOnClickListener(this);
+
+    }
+
+    private void formatToolBar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setBackgroundColor(Color.TRANSPARENT);
+
+       /* setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
+
+        // Status bar :: Transparent
+        Window window = this.getWindow();
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(Color.TRANSPARENT);
+        }
     }
 
     @Override
@@ -177,24 +227,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    @Override
-    public void onPlaceSelected(Place place) {
-        Log.i(TAG, "Place: " + place.getName());
-        Toast.makeText(MapsActivity.this,"Place selected: "+place.getName(),Toast.LENGTH_SHORT).show();
-        mMarkerPosition  = place.getLatLng();
-        mPlaceName = place.getName().toString();
+    public void setSelectedPlace(String placeName,LatLng markerPosition) {
+        Log.i(TAG, "Place: " + placeName);
+        Toast.makeText(MapsActivity.this,"Place selected: "+placeName,Toast.LENGTH_SHORT).show();
+        mEditText.setText(placeName);
         if(mMarker!=null)
             mMap.clear();
         MarkerOptions markerOptions = new MarkerOptions()
-                .position(mMarkerPosition)
-                .title(mPlaceName)
+                .position(markerPosition)
+                .title(placeName)
                 .draggable(true);
         mMarker = mMap.addMarker(markerOptions);
         mMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-        pointToPosition(mMarkerPosition);
+        pointToPosition(markerPosition);
     }
 
-    @Override
+
     public void onError(Status status) {
         Log.i(TAG, "An error occurred: " + status);
     }
@@ -205,6 +253,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         marker.setIcon(BitmapDescriptorFactory.defaultMarker(newHue));
         marker.showInfoWindow();
         return true;
+    }
+    @Override
+    public void onClick(View v) {
+        Intent intent = new Intent(this,SearchActivity.class);
+        startActivityForResult(intent,EDIT_TEXT_CODE);
     }
 
     @Override

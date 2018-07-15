@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="card_margin">5dp</dimen>
-    <dimen name="card_height">50dp</dimen>
+    <dimen name="card_margin">10dp</dimen>
+    <dimen name="card_corner_radius">2dp</dimen>
+    <dimen name="card_height">60dp</dimen>
+    <dimen name="textSize">16sp</dimen>
+    <dimen name="activity_margin_10">10dp</dimen>
+    <dimen name="activity_margin_16">16dp</dimen>
+    <dimen name="top_margin">40dp</dimen>
 </resources>
