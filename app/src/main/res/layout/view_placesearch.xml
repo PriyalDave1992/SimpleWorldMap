@@ -2,35 +2,47 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/predictedRow"
     android:layout_width="match_parent"
-    android:layout_height="65dp"
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="10dp"
+    android:layout_height="@dimen/item_height"
+    android:layout_marginLeft="@dimen/card_margin"
+    android:layout_marginRight="@dimen/card_margin"
     android:layout_centerVertical="true"
     android:gravity="center_vertical">
 
     <ImageView
         android:id="@+id/image"
-        android:layout_width="22dp"
-        android:layout_height="22dp"
-        android:src="@drawable/ic_marker"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_marker_1"
+        android:layout_marginStart="@dimen/card_margin"
+        android:layout_marginTop="@dimen/item_img_margin"
         />
 
     <TextView
         android:id="@+id/address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="#000"
-        android:textSize="15sp"
-        android:layout_toRightOf="@+id/image"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
+        android:textColor="@color/black"
+        android:textSize="@dimen/textSize"
+        android:layout_marginTop="@dimen/address_top_margin"
+        android:layout_toEndOf="@+id/image"
+        android:layout_marginLeft="@dimen/item_margin"
+        android:layout_marginRight="@dimen/item_margin"
         />
+    <TextView
+        android:id="@+id/tv_sec_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/dark_gray"
+        android:textSize="@dimen/second_address_size"
+        android:layout_below="@+id/address"
+        android:layout_toEndOf="@+id/image"
+        android:text="jdjhdfhd"
+        android:layout_marginLeft="@dimen/item_margin"
+        android:layout_marginRight="@dimen/item_margin" />
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/light_gray"
+        android:layout_marginTop="@dimen/card_margin"
         android:layout_alignParentBottom="true"/>
 </RelativeLayout>

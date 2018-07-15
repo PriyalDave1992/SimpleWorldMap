@@ -137,9 +137,15 @@ public class SearchActivity extends AppCompatActivity implements
     @Override
     public void onClick(View v) {
         if (v == mClear) {
-            mSearchEdittext.setText("");
-            if (mAdapter != null) {
-                mAdapter.clearList();
+            if(!mSearchEdittext.getText().toString().equals("")) {
+                mSearchEdittext.setText("");
+                if (mAdapter != null) {
+                    mAdapter.clearList();
+                }
+            }
+            else
+            {
+                this.finish();
             }
 
         }

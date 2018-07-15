@@ -69,6 +69,7 @@ public class PlaceAutocompleteAdapter extends RecyclerView.Adapter<PlaceAutocomp
     public void clearList(){
         if(mResultList!=null && mResultList.size()>0){
             mResultList.clear();
+            notifyDataSetChanged();
         }
     }
 
@@ -149,7 +150,7 @@ public class PlaceAutocompleteAdapter extends RecyclerView.Adapter<PlaceAutocomp
                 AutocompletePrediction prediction = iterator.next();
                 // Get the details of this prediction and copy it into a new PlaceAutocomplete object.
                 resultList.add(new PlaceAutocomplete(prediction.getPlaceId(),
-                        prediction.getFullText(null)));
+                        prediction.getPrimaryText(null),prediction.getSecondaryText(null)));
 
             }
 
@@ -176,7 +177,8 @@ public class PlaceAutocompleteAdapter extends RecyclerView.Adapter<PlaceAutocomp
     @Override
     public void onBindViewHolder(PlaceViewHolder mPredictionHolder, final int i) {
 
-        mPredictionHolder.mAddress.setText(mResultList.get(i).description);
+        mPredictionHolder.mAddress.setText(mResultList.get(i).primaryAddress);
+        mPredictionHolder.mSecAddress.setText(mResultList.get(i).secondaryAddress);
         mPredictionHolder.mParentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -201,15 +203,17 @@ public class PlaceAutocompleteAdapter extends RecyclerView.Adapter<PlaceAutocomp
     /*
     View Holder For Trip History
      */
-    public class PlaceViewHolder extends RecyclerView.ViewHolder {
+    class PlaceViewHolder extends RecyclerView.ViewHolder {
         //        CardView mCardView;
-        public RelativeLayout mParentLayout;
-        public TextView mAddress;
+        RelativeLayout mParentLayout;
+        TextView mAddress;
+        TextView mSecAddress;
 
-        public PlaceViewHolder(View itemView) {
+        PlaceViewHolder(View itemView) {
             super(itemView);
-            mParentLayout = (RelativeLayout)itemView.findViewById(R.id.predictedRow);
-            mAddress = (TextView)itemView.findViewById(R.id.address);
+            mParentLayout = itemView.findViewById(R.id.predictedRow);
+            mAddress = itemView.findViewById(R.id.address);
+            mSecAddress = itemView.findViewById(R.id.tv_sec_address);
         }
 
     }
@@ -219,17 +223,19 @@ public class PlaceAutocompleteAdapter extends RecyclerView.Adapter<PlaceAutocomp
      */
     public class PlaceAutocomplete {
 
-        public CharSequence placeId;
-        public CharSequence description;
+        CharSequence placeId;
+        CharSequence primaryAddress;
+        CharSequence secondaryAddress;
 
-        PlaceAutocomplete(CharSequence placeId, CharSequence description) {
+        PlaceAutocomplete(CharSequence placeId, CharSequence primaryAddress,CharSequence secondaryAddress) {
             this.placeId = placeId;
-            this.description = description;
+            this.primaryAddress = primaryAddress;
+            this.secondaryAddress = secondaryAddress;
         }
 
         @Override
         public String toString() {
-            return description.toString();
+            return primaryAddress.toString();
         }
     }
 }
