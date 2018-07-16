@@ -35,5 +35,5 @@ This is a Simple World Map application which enables to search a place and get m
 ## Additional Features
 - You can click on the marker and see a tooltip saying which place is it marking
 - On cliking the marker, it changes the color depicting that it has been clicked and shows the tooltip/title on top of it
-- Click on the 'earth icon' to change the style of the Map from Retro, Night, Grayscale and Default views
+- Click on the 'earth icon' to change the style of the Map from Retro, Night, Grayscale and Default views. Some styles help to view roads and places very clearly
 - Earth icon and cancel/clear icons have alpha animation defined on them for showing click effect
