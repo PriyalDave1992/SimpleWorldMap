@@ -21,7 +21,6 @@ import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.AutocompletePredictionBuffer;
 import com.google.android.gms.location.places.Places;
-import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -34,56 +33,45 @@ import java.util.concurrent.TimeUnit;
 public class PlaceAutocompleteAdapter extends RecyclerView.Adapter<PlaceAutocompleteAdapter.PlaceViewHolder>
         implements Filterable {
 
-    public interface PlaceAutoCompleteInterface{
+    public interface PlaceAutoCompleteInterface {
         void onPlaceClick(ArrayList<PlaceAutocomplete> mResultList, int position);
     }
 
-    Context mContext;
-    PlaceAutoCompleteInterface mListener;
+    private Context mContext;
+    private PlaceAutoCompleteInterface mListener;
     private static final String TAG = PlaceAutocompleteAdapter.class.getSimpleName();
     private static final CharacterStyle STYLE_BOLD = new StyleSpan(Typeface.BOLD);
-    ArrayList<PlaceAutocomplete> mResultList;
+    private ArrayList<PlaceAutocomplete> mResultList;
 
     private GoogleApiClient mGoogleApiClient;
-
-    private LatLngBounds mBounds;
 
     private int layout;
 
     private AutocompleteFilter mPlaceFilter;
 
 
-    public PlaceAutocompleteAdapter(Context context, int resource, GoogleApiClient googleApiClient,
-                                    LatLngBounds bounds, AutocompleteFilter filter){
+    PlaceAutocompleteAdapter(Context context, int resource, GoogleApiClient googleApiClient,
+                             AutocompleteFilter filter) {
         this.mContext = context;
         layout = resource;
         mGoogleApiClient = googleApiClient;
-        mBounds = bounds;
         mPlaceFilter = filter;
-        this.mListener = (PlaceAutoCompleteInterface)mContext;
+        this.mListener = (PlaceAutoCompleteInterface) mContext;
     }
 
     /*
     Clear List items
      */
-    public void clearList(){
-        if(mResultList!=null && mResultList.size()>0){
+    void clearList() {
+        if (mResultList != null && mResultList.size() > 0) {
             mResultList.clear();
             notifyDataSetChanged();
         }
     }
 
-
-    /**
-     * Sets the bounds for all subsequent queries.
-     */
-    public void setBounds(LatLngBounds bounds) {
-        mBounds = bounds;
-    }
-
     @Override
     public Filter getFilter() {
-        Filter filter = new Filter() {
+        return new Filter() {
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
                 FilterResults results = new FilterResults();
@@ -105,18 +93,14 @@ public class PlaceAutocompleteAdapter extends RecyclerView.Adapter<PlaceAutocomp
                 if (results != null && results.count > 0) {
                     // The API returned at least one result, update the data.
                     notifyDataSetChanged();
-                } else {
-                    // The API did not return any results, invalidate the data set.
-                    //notifyDataSetInvalidated();
                 }
             }
         };
-        return filter;
     }
 
     private ArrayList<PlaceAutocomplete> getAutocomplete(CharSequence constraint) {
         if (mGoogleApiClient.isConnected()) {
-            Log.i("", "Starting autocomplete query for: " + constraint);
+            Log.i(TAG, "Starting autocomplete query for: " + constraint);
 
             // Submit the query to the autocomplete API and retrieve a PendingResult that will
             // contain the results when the query completes.
@@ -133,33 +117,43 @@ public class PlaceAutocompleteAdapter extends RecyclerView.Adapter<PlaceAutocomp
             // Confirm that the query completed successfully, otherwise return null
             final Status status = autocompletePredictions.getStatus();
             if (!status.isSuccess()) {
-                Log.e("", "Error getting autocomplete prediction API call: " + status.toString());
+                Log.e(TAG, "Error getting autocomplete prediction API call: " + status.toString());
                 autocompletePredictions.release();
                 return null;
             }
-
             Log.i(TAG, "Query completed. Received " + autocompletePredictions.getCount()
                     + " predictions.");
 
             // Copy the results into our own data structure, because we can't hold onto the buffer.
-            // AutocompletePrediction objects encapsulate the API response (place ID and description).
+            // AutocompletePrediction objects encapsulate the API response (place ID, primary text, secondary text)
 
             Iterator<AutocompletePrediction> iterator = autocompletePredictions.iterator();
-            ArrayList resultList = new ArrayList<>(autocompletePredictions.getCount());
+            ArrayList<PlaceAutocomplete> resultList = new ArrayList<>(autocompletePredictions.getCount());
             while (iterator.hasNext()) {
                 AutocompletePrediction prediction = iterator.next();
-                // Get the details of this prediction and copy it into a new PlaceAutocomplete object.
+                // Get the details of this prediction and copy it into a new PlaceAutocomplete object
+                StringBuilder primaryText = new StringBuilder();
+                StringBuilder secondaryText = new StringBuilder();
+                if (prediction.getPrimaryText(null).length() > 29) {
+                    primaryText.append(prediction.getPrimaryText(null).subSequence(0, 29).toString());
+                    primaryText.append("...");
+                } else {
+                    primaryText.append(prediction.getPrimaryText(null));
+                }
+                if (prediction.getSecondaryText(null).length() > 50) {
+                    secondaryText.append(prediction.getSecondaryText(null).subSequence(0, 51).toString());
+                    secondaryText.append("...");
+                } else {
+                    secondaryText.append(prediction.getSecondaryText(null));
+                }
                 resultList.add(new PlaceAutocomplete(prediction.getPlaceId(),
-                        prediction.getPrimaryText(null),prediction.getSecondaryText(null)));
-
+                        primaryText.toString(), secondaryText.toString()));
             }
-
             // Release the buffer now that all data has been copied.
             autocompletePredictions.release();
-
             return resultList;
         }
-        Log.e("", "Google API client is not connected for autocomplete query.");
+        Log.e(TAG, "Google API client is not connected for autocomplete query.");
         return null;
     }
 
@@ -182,7 +176,7 @@ public class PlaceAutocompleteAdapter extends RecyclerView.Adapter<PlaceAutocomp
         mPredictionHolder.mParentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onPlaceClick(mResultList,i);
+                mListener.onPlaceClick(mResultList, i);
             }
         });
 
@@ -190,21 +184,16 @@ public class PlaceAutocompleteAdapter extends RecyclerView.Adapter<PlaceAutocomp
 
     @Override
     public int getItemCount() {
-        if(mResultList != null)
+        if (mResultList != null)
             return mResultList.size();
         else
             return 0;
     }
 
-    public PlaceAutocomplete getItem(int position) {
-        return mResultList.get(position);
-    }
-
     /*
-    View Holder For Trip History
+    View Holder for each search result
      */
     class PlaceViewHolder extends RecyclerView.ViewHolder {
-        //        CardView mCardView;
         RelativeLayout mParentLayout;
         TextView mAddress;
         TextView mSecAddress;
@@ -219,23 +208,18 @@ public class PlaceAutocompleteAdapter extends RecyclerView.Adapter<PlaceAutocomp
     }
 
     /**
-     * Holder for Places Geo Data Autocomplete API results.
+     * Holder for Places Geo Data Autocomplete API results
      */
-    public class PlaceAutocomplete {
+    class PlaceAutocomplete {
 
         CharSequence placeId;
         CharSequence primaryAddress;
         CharSequence secondaryAddress;
 
-        PlaceAutocomplete(CharSequence placeId, CharSequence primaryAddress,CharSequence secondaryAddress) {
+        PlaceAutocomplete(CharSequence placeId, CharSequence primaryAddress, CharSequence secondaryAddress) {
             this.placeId = placeId;
             this.primaryAddress = primaryAddress;
             this.secondaryAddress = secondaryAddress;
-        }
-
-        @Override
-        public String toString() {
-            return primaryAddress.toString();
         }
     }
 }

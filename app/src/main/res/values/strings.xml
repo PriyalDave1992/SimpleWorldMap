@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">SimpleWorldMap</string>
     <string name="title_activity_maps">Map</string>
-    <string name="edittext_hint">Which place?</string>
+    <string name="edittext_hint">Search Location</string>
+    <string name="iv_earth_desc">Icon Earth</string>
+    <string name="iv_clear">Icon for clearing text</string>
+    <string name="powered_google">Powered by google</string>
+    <string name="iv_marker">Marker image for depicting place</string>
 </resources>

@@ -31,8 +31,9 @@
             </intent-filter>
 
         </activity>
-        <activity android:name=".SearchActivity"
-                  android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".SearchActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
