@@ -193,7 +193,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap = googleMap;
             mMap.setOnMarkerClickListener(this);
             setSelectedStyle();
-            if(!mPlaceName.equalsIgnoreCase("---")) {
+            if(!mPlaceName.equals("---")) {
                 MarkerOptions markerOptions = new MarkerOptions()
                         .position(mMarkerPosition)
                         .icon(BitmapDescriptorFactory.defaultMarker(mMarkerInfo.mHue))
@@ -207,9 +207,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                 }
             }
-            else {
-                pointToPosition(DEFAULT_MARKER_POSITION);
-            }
 
     }
     //Will be called when EditText or Earth icon or 'X' icon is clicked
@@ -219,7 +216,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.alpha);
             mImageViewClear.startAnimation(animation);
             mEditText.setText("");
-            mPlaceName = "";
+            mPlaceName = "---";
             mMarkerPosition = new LatLng(0,0);
             mMap.clear();
         }
@@ -227,7 +224,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         {
             Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.alpha);
             mImageViewEarth.startAnimation(animation);
-            mSelectedStyleId = mStyleIds[new Random().nextInt(mStyleIds.length)];
+            int newSelection = mStyleIds[new Random().nextInt(mStyleIds.length)];
+            while(newSelection == mSelectedStyleId)
+                newSelection = mStyleIds[new Random().nextInt(mStyleIds.length)];
+            mSelectedStyleId = newSelection;
             setSelectedStyle();
         }
         else {
