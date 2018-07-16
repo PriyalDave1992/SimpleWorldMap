@@ -6,4 +6,11 @@
     <string name="iv_clear">Icon for clearing text</string>
     <string name="powered_google">Powered by google</string>
     <string name="iv_marker">Marker image for depicting place</string>
+    <string name="style_default">Default</string>
+    <string name="style_label_retro">Retro</string>
+    <string name="style_label_night">Night</string>
+    <string name="style_label_grayscale">Grayscale</string>
+    <string name="style_label_no_pois_no_transit">No POIs or transit</string>
+    <string name="style_choose">Choose style</string>
+    <string name="style_set_to">Style set to: %1$s</string>
 </resources>

@@ -26,6 +26,7 @@ import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Priyal Divakala on 14/07/2018.
@@ -139,10 +140,21 @@ public class SearchActivity extends AppCompatActivity implements
                     public void onResult(@NonNull PlaceBuffer places) {
                         if (places.getCount() == 1) {
                             Intent data = new Intent();
+                            int zoomLevel = 0;
+                            List<Integer> placeTypes = places.get(0).getPlaceTypes();
+                            if(placeTypes!=null) {
+                                if (placeTypes.contains(Place.TYPE_COUNTRY) || placeTypes.contains(Place.TYPE_POLITICAL))
+                                    zoomLevel = 5;
+                                else if (placeTypes.contains(Place.TYPE_POINT_OF_INTEREST) || placeTypes.contains(Place.TYPE_ESTABLISHMENT))
+                                    zoomLevel = 18;
+                                else
+                                    zoomLevel = 14;
+                            }//1013//34
                             data.putExtra("lat", String.valueOf(places.get(0).getLatLng().latitude));
                             data.putExtra("lng", String.valueOf(places.get(0).getLatLng().longitude));
-                            if(places.get(0).getName().length() > 20)
-                              data.putExtra("placename", String.valueOf(places.get(0).getName().subSequence(0,21))+"...");
+                            data.putExtra("zoomlevel", zoomLevel);
+                            if(places.get(0).getName().length() > 16)
+                              data.putExtra("placename", String.valueOf(places.get(0).getName().subSequence(0,16))+"...");
                             else
                                 data.putExtra("placename", String.valueOf(places.get(0).getName()));
 
