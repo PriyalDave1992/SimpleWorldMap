@@ -10,6 +10,7 @@ This is a Simple World Map application which enables to search a place and get m
 ### Android specifics
 - Minimum sdk version is 21 and target sdk version is 26
 - Uses permission ACCESS_FINE_LOCATION and INTERNET
+- Application will ask for internet permission if Wifi or data pack both are disabled
 
 ### Maps and Places
 - Map is rendered using SupportMapFragment from com.google.android.gms.maps
