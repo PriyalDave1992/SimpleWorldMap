@@ -212,6 +212,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
     }
+    //Will be called when EditText or Earth icon or 'X' icon is clicked
+    @Override
+    public void onClick(View v) {
+        if(v == mImageViewClear) {
+            Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.alpha);
+            mImageViewClear.startAnimation(animation);
+            mEditText.setText("");
+            mPlaceName = "";
+            mMarkerPosition = new LatLng(0,0);
+            mMap.clear();
+        }
+        else if(v == mImageViewEarth)
+        {
+            Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.alpha);
+            mImageViewEarth.startAnimation(animation);
+            mSelectedStyleId = mStyleIds[new Random().nextInt(mStyleIds.length)];
+            setSelectedStyle();
+        }
+        else {
+            Intent intent = new Intent(this, SearchActivity.class);
+            startActivityForResult(intent, 1);
+        }
+    }
     @Override
     public boolean onMarkerClick(Marker marker) {
         if(mMarkerInfo.getHue() == MARKER_HUES[0])
@@ -261,54 +284,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
     }
-    private void showStylesDialog() {
-        // mStyleIds stores each style's resource ID, and we extract the names here, rather
-        // than using an XML array resource which AlertDialog.Builder.setItems() can also
-        // accept. We do this since using an array resource would mean we would not have
-        // constant values we can switch/case on, when choosing which style to apply.
-        List<String> styleNames = new ArrayList<>();
-        for (int style : mStyleIds) {
-            styleNames.add(getString(style));
-        }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(getString(R.string.style_choose));
-        builder.setItems(styleNames.toArray(new CharSequence[styleNames.size()]),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mSelectedStyleId = mStyleIds[which];
-                        String msg = getString(R.string.style_set_to, getString(mSelectedStyleId));
-                        Toast.makeText(getBaseContext(), msg, Toast.LENGTH_SHORT).show();
-                        Log.d(TAG, msg);
-                        setSelectedStyle();
-                    }
-                });
-        builder.show();
-    }
-    //Will be called when EditText or 'X' button is clicked
-    @Override
-    public void onClick(View v) {
-        if(v == mImageViewClear) {
-            Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.alpha);
-            mImageViewClear.startAnimation(animation);
-            mEditText.setText("");
-            mPlaceName = "";
-            mMarkerPosition = new LatLng(0,0);
-            mMap.clear();
-        }
-        else if(v == mImageViewEarth)
-        {
-            Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.alpha);
-            mImageViewEarth.startAnimation(animation);
-            mSelectedStyleId = mStyleIds[new Random().nextInt(mStyleIds.length)];
-            setSelectedStyle();
-        }
-        else {
-            Intent intent = new Intent(this, SearchActivity.class);
-            startActivityForResult(intent, 1);
-        }
-    }
     /**
      * Creates a {@link MapStyleOptions} object via loadRawResourceStyle() (or via the
      * constructor with a JSON String), then sets it on the {@link GoogleMap} instance,
@@ -338,19 +314,4 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         mMap.setMapStyle(style);
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.styled_map, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_style_choose) {
-            showStylesDialog();
-        }
-        return true;
-    }
-
 }
