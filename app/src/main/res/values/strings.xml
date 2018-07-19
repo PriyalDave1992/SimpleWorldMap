@@ -13,4 +13,7 @@
     <string name="style_label_no_pois_no_transit">No POIs or transit</string>
     <string name="style_choose">Choose style</string>
     <string name="style_set_to">Style set to: %1$s</string>
+
+    <string name="type_satellite">Satellite</string>
+    <string name="type_default">Default</string>
 </resources>

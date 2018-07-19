@@ -47,6 +47,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private EditText mEditText;
     private ImageView mImageViewEarth;
     private ImageView mImageViewClear;
+    private SupportMapFragment mapFragment;
     private static final LatLng DEFAULT_MARKER_POSITION = new LatLng(56.130365999999995,-106.34677099999999);
     /**
      * List of hues to use for the marker
@@ -156,7 +157,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void initViews()
     {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
@@ -238,6 +239,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 newSelection = mStyleIds[new Random().nextInt(mStyleIds.length)];
             mSelectedStyleId = newSelection;
             setSelectedStyle();
+
         }
         else {
             Intent intent = new Intent(this, SearchActivity.class);
@@ -323,6 +325,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         mMap.setMapStyle(style);
     }
+
     private void showDialog() {
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
         builder.setMessage("Please connect to wifi")
